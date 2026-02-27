@@ -1162,12 +1162,23 @@
         async function deleteMemory(id, btn) {
             if (!confirm('确定要删除这条回忆吗？')) return;
             try {
-                await fetch(`/api/memories/${id}`, { method: 'DELETE' });
+                const res = await fetch(`/api/memories/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (!res.ok) {
+                    alert('删除失败: ' + (data.error || '未知错误'));
+                    return;
+                }
                 const card = btn.closest('.timeline-item');
-                card.style.opacity = '0';
-                card.style.transform = 'scale(0.8)';
-                setTimeout(() => card.remove(), 400);
-            } catch (err) { console.error('删除失败:', err); }
+                if (card) {
+                    card.style.transition = 'opacity 0.4s, transform 0.4s';
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.8)';
+                    setTimeout(() => card.remove(), 400);
+                }
+            } catch (err) {
+                console.error('删除失败:', err);
+                alert('删除失败: ' + err.message);
+            }
         }
 
         const style = document.createElement('style');
