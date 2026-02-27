@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Love Story</title>
+    <meta name="description" content="记录我们的爱情故事，每一个珍贵的瞬间">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --rose-gold: #b76e79;
+            --rose-gold-light: #d4a0a7;
+            --deep-purple: #1a0e2e;
+            --soft-purple: #2d1b4e;
+            --cream: #fdf6f0;
+            --warm-white: #fff9f5;
+            --gold: #d4af37;
+            --gold-light: #f0d78c;
+            --text-dark: #2c1810;
+            --text-muted: #8b7b74;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            overflow: hidden;
+            background: var(--deep-purple);
+            color: var(--text-dark);
+        }
+
+        body.timeline-active {
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* ===== Landing ===== */
+        #landing {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease;
+        }
+
+        #landing.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Background canvas */
+        #bgCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Castle Scene */
+        .castle-scene {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .title-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            color: var(--gold-light);
+            margin-bottom: 20px;
+            letter-spacing: 8px;
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.5), 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #castleCanvas {
+            cursor: pointer;
+            display: block;
+            filter: drop-shadow(0 8px 30px rgba(80, 40, 120, 0.6));
+            transition: transform 2.2s cubic-bezier(0.4, 0, 0.15, 1), filter 2.2s ease, opacity 1s ease;
+            transform-origin: 50% 92%;
+            /* gate position */
+            transform: perspective(800px) rotateX(3deg);
+        }
+
+        #castleCanvas.zooming {
+            transform: perspective(800px) rotateX(0deg) scale(5);
+            filter: drop-shadow(0 0 0 transparent);
+            opacity: 0;
+        }
+
+        .click-hint {
+            margin-top: 16px;
+            color: var(--gold-light);
+            font-size: 14px;
+            letter-spacing: 3px;
+            font-family: 'Playfair Display', serif;
+            animation: pulse 2s ease-in-out infinite;
+            transition: opacity 0.5s ease;
+        }
+
+        .click-hint.hide {
+            opacity: 0;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.4;
+                transform: translateY(0);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translateY(-5px);
+            }
+        }
+
+        /* ===== Timeline ===== */
+        #main-content {
+            opacity: 0;
+            transition: opacity 1s ease;
+            min-height: 100vh;
+            background: linear-gradient(180deg, var(--cream) 0%, var(--warm-white) 50%, #fef0e8 100%);
+        }
+
+        #main-content.visible {
+            opacity: 1;
+        }
+
+        .timeline-header {
+            text-align: center;
+            padding: 80px 20px 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timeline-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 300px;
+            background: linear-gradient(180deg, var(--deep-purple) 0%, var(--soft-purple) 40%, transparent 100%);
+            z-index: 0;
+        }
+
+        .timeline-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            color: var(--gold-light);
+            position: relative;
+            z-index: 1;
+            margin-bottom: 10px;
+        }
+
+        .timeline-header .subtitle {
+            font-size: 16px;
+            color: var(--rose-gold-light);
+            position: relative;
+            z-index: 1;
+            letter-spacing: 4px;
+        }
+
+        .heart-divider {
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px 100px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--rose-gold), var(--gold), var(--rose-gold));
+            opacity: 0.6;
+        }
+
+        .timeline-item {
+            position: relative;
+            width: 50%;
+            padding: 20px 40px;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .timeline-item.left {
+            left: 0;
+            text-align: right;
+            padding-right: 60px;
+        }
+
+        .timeline-item.right {
+            left: 50%;
+            text-align: left;
+            padding-left: 60px;
+        }
+
+        .timeline-item::before {
+            content: '❤';
+            position: absolute;
+            top: 30px;
+            font-size: 16px;
+            color: var(--rose-gold);
+            z-index: 2;
+            filter: drop-shadow(0 0 6px rgba(183, 110, 121, 0.5));
+        }
+
+        .timeline-item.left::before {
+            right: -10px;
+        }
+
+        .timeline-item.right::before {
+            left: -10px;
+        }
+
+        .timeline-card {
+            background: rgba(255, 255, 255, 0.85);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 24px rgba(183, 110, 121, 0.12), 0 1px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(183, 110, 121, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timeline-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--rose-gold), var(--gold), var(--rose-gold));
+        }
+
+        .timeline-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(183, 110, 121, 0.2), 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .timeline-date {
+            font-family: 'Playfair Display', serif;
+            font-size: 14px;
+            color: var(--rose-gold);
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .timeline-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .timeline-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .photo-grid {
+            display: grid;
+            gap: 8px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .photo-grid.single {
+            grid-template-columns: 1fr;
+        }
+
+        .photo-grid.double {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .photo-grid.triple {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+        }
+
+        .photo-grid.triple .photo-item:first-child {
+            grid-row: 1 / 3;
+        }
+
+        .photo-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            aspect-ratio: 4/3;
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .photo-item:hover img {
+            transform: scale(1.08);
+        }
+
+        .video-container {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .video-container video {
+            width: 100%;
+            border-radius: 12px;
+        }
+
+        .photo-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .ph-1 {
+            background: linear-gradient(135deg, #f5c6c6, #b76e79);
+        }
+
+        .ph-2 {
+            background: linear-gradient(135deg, #c6d5f5, #6e8fb7);
+        }
+
+        .ph-3 {
+            background: linear-gradient(135deg, #f5e6c6, #b7976e);
+        }
+
+        .ph-4 {
+            background: linear-gradient(135deg, #c6f5d5, #6eb78f);
+        }
+
+        .ph-5 {
+            background: linear-gradient(135deg, #e6c6f5, #976eb7);
+        }
+
+        .ph-6 {
+            background: linear-gradient(135deg, #f5c6e6, #b76ea7);
+        }
+
+        .timeline-end {
+            text-align: center;
+            padding: 40px 20px 80px;
+        }
+
+        .timeline-end .heart-big {
+            font-size: 48px;
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        .timeline-end p {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            color: var(--rose-gold);
+            margin-top: 15px;
+            letter-spacing: 3px;
+        }
+
+        @keyframes heartbeat {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            15% {
+                transform: scale(1.15);
+            }
+
+            30% {
+                transform: scale(1);
+            }
+
+            45% {
+                transform: scale(1.1);
+            }
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .scroll-indicator.visible {
+            opacity: 1;
+        }
+
+        .scroll-arrow {
+            width: 30px;
+            height: 30px;
+            border-right: 2px solid var(--rose-gold);
+            border-bottom: 2px solid var(--rose-gold);
+            transform: rotate(45deg);
+            animation: scrollBounce 2s ease-in-out infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes scrollBounce {
+
+            0%,
+            100% {
+                transform: rotate(45deg) translate(0, 0);
+                opacity: 0.3;
+            }
+
+            50% {
+                transform: rotate(45deg) translate(5px, 5px);
+                opacity: 0.8;
+            }
+        }
+
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-out;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90vh;
+            border-radius: 8px;
+            box-shadow: 0 0 60px rgba(0, 0, 0, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            #castleCanvas {
+                width: 320px !important;
+                height: auto !important;
+            }
+
+            .title-text {
+                font-size: 20px;
+                letter-spacing: 4px;
+            }
+
+            .timeline::before {
+                left: 30px;
+            }
+
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 20px;
+                text-align: left;
+            }
+
+            .timeline-item.left {
+                text-align: left;
+                padding-right: 20px;
+                padding-left: 70px;
+            }
+
+            .timeline-item.right {
+                left: 0;
+            }
+
+            .timeline-item::before {
+                left: 21px !important;
+                right: auto !important;
+            }
+
+            .timeline-header h1 {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Landing Page -->
+    <div id="landing">
+        <canvas id="bgCanvas"></canvas>
+        <div class="castle-scene">
+            <div class="title-text">Our Love Story</div>
+            <canvas id="castleCanvas" width="600" height="500" onclick="openGate()"></canvas>
+            <div class="click-hint" id="clickHint">✦ 点击城门开启 ✦</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content">
+        <div class="timeline-header">
+            <h1>Our Love Story</h1>
+            <p class="subtitle">每一个瞬间，都值得被铭记</p>
+            <div class="heart-divider">💕</div>
+        </div>
+        <div class="timeline-controls" style="text-align: center; margin-bottom: 30px;">
+            <input type="file" id="memoryUploader" accept="image/*" multiple style="display: none;">
+            <button class="add-memory-btn" onclick="document.getElementById('memoryUploader').click()" style="
+                background: linear-gradient(135deg, var(--rose-gold), var(--gold));
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 25px;
+                font-size: 16px;
+                cursor: pointer;
+                box-shadow: 0 4px 15px rgba(212,160,167,0.4);
+                transition: transform 0.2s, box-shadow 0.2s;
+            ">✨ 添加新回忆 ✨</button>
+        </div>
+        <div class="timeline" id="timeline-container">
+            <!-- Dynamic cards will be inserted here -->
+        </div>
+        <div class="timeline-end">
+            <div class="heart-big">💖</div>
+            <p>To be continued...</p>
+        </div>
+    </div>
+    <div class="scroll-indicator" id="scrollIndicator">
+        <div class="scroll-arrow"></div>
+    </div>
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()"><img id="lightboxImg" src="" alt=""></div>
+
+    <script>
+        // ===== Background: stars + moon + floating particles =====
+        (function () {
+            const bg = document.getElementById('bgCanvas');
+            const ctx = bg.getContext('2d');
+            let W, H;
+            function resize() { W = bg.width = window.innerWidth; H = bg.height = window.innerHeight; }
+            resize(); window.addEventListener('resize', resize);
+
+            // Stars
+            const stars = Array.from({ length: 150 }, () => ({
+                x: Math.random() * 2000, y: Math.random() * 1200,
+                r: 0.5 + Math.random() * 2, phase: Math.random() * Math.PI * 2, speed: 0.3 + Math.random() * 0.7
+            }));
+            // Floating hearts
+            const hearts = Array.from({ length: 12 }, () => ({
+                x: Math.random() * 2000, y: Math.random() * 1200,
+                size: 8 + Math.random() * 14, speed: 0.3 + Math.random() * 0.5,
+                drift: Math.random() * 2 - 1, phase: Math.random() * Math.PI * 2,
+                color: ['#ff6b8a', '#ff8fab', '#d4a0a7', '#f0d78c', '#e0a0c0'][Math.floor(Math.random() * 5)]
+            }));
+
+            function drawHeart(cx, cy, size, color) {
+                ctx.save(); ctx.translate(cx, cy); ctx.scale(size / 15, size / 15);
+                ctx.beginPath();
+                ctx.moveTo(0, -3);
+                ctx.bezierCurveTo(-8, -12, -18, -4, -10, 5);
+                ctx.lineTo(0, 14);
+                ctx.lineTo(10, 5);
+                ctx.bezierCurveTo(18, -4, 8, -12, 0, -3);
+                ctx.fillStyle = color; ctx.globalAlpha = 0.5; ctx.fill();
+                ctx.restore(); ctx.globalAlpha = 1;
+            }
+
+            function animBg(t) {
+                ctx.clearRect(0, 0, W, H);
+                // Sky gradient
+                const sky = ctx.createLinearGradient(0, 0, 0, H);
+                sky.addColorStop(0, '#060218'); sky.addColorStop(0.3, '#120830');
+                sky.addColorStop(0.6, '#1a0e3e'); sky.addColorStop(1, '#2d1b4e');
+                ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+
+                // Moon
+                const mx = W * 0.82, my = H * 0.12;
+                const mg = ctx.createRadialGradient(mx - 10, my - 10, 5, mx, my, 45);
+                mg.addColorStop(0, '#fffde8'); mg.addColorStop(0.7, '#f0d78c'); mg.addColorStop(1, 'rgba(240,215,140,0)');
+                ctx.fillStyle = mg; ctx.beginPath(); ctx.arc(mx, my, 45, 0, Math.PI * 2); ctx.fill();
+                // Moon halo
+                ctx.fillStyle = 'rgba(240,215,140,0.06)'; ctx.beginPath(); ctx.arc(mx, my, 90, 0, Math.PI * 2); ctx.fill();
+
+                // Stars
+                stars.forEach(s => {
+                    const a = 0.3 + 0.7 * Math.abs(Math.sin(t * 0.001 * s.speed + s.phase));
+                    ctx.globalAlpha = a; ctx.fillStyle = '#fff';
+                    ctx.beginPath(); ctx.arc(s.x / 2000 * W, s.y / 1200 * H, s.r, 0, Math.PI * 2); ctx.fill();
+                });
+                ctx.globalAlpha = 1;
+
+                // Hearts
+                hearts.forEach(h => {
+                    h.y -= h.speed; h.x += Math.sin(t * 0.001 + h.phase) * h.drift * 0.3;
+                    if (h.y < -30) { h.y = H + 30; h.x = Math.random() * W; }
+                    drawHeart(h.x / 2000 * W, h.y / 1200 * H, h.size, h.color);
+                });
+
+                requestAnimationFrame(animBg);
+            }
+            requestAnimationFrame(animBg);
+        })();
+
+        // ===== Castle Canvas Drawing =====
+        const castleCanvas = document.getElementById('castleCanvas');
+        const cc = castleCanvas.getContext('2d');
+        const CW = 600, CH = 500;
+        let doorAngle = 0, doorOpening = false;
+
+        function drawCastle() {
+            cc.clearRect(0, 0, CW, CH);
+
+            // Hand-drawn style settings
+            cc.lineJoin = 'round';
+            cc.lineCap = 'round';
+            const outlineColor = '#1a0e2e';
+            const outlineWidth = 2.5;
+
+            // Helper: draw irregular polygon
+            function drawPoly(pts, fillStyle, stroke) {
+                cc.fillStyle = fillStyle;
+                cc.beginPath();
+                cc.moveTo(pts[0].x, pts[0].y);
+                for (let i = 1; i < pts.length; i++) cc.lineTo(pts[i].x, pts[i].y);
+                cc.closePath();
+                cc.fill();
+                if (stroke) {
+                    cc.lineWidth = outlineWidth;
+                    cc.strokeStyle = outlineColor;
+                    cc.stroke();
+                }
+            }
+
+            // Helper: witch hat roof (curved cone)
+            function drawRoof(x, y, w, h, fillStyle) {
+                cc.fillStyle = fillStyle;
+                cc.beginPath();
+                cc.moveTo(x - 8, y); // left base
+                // Curve up to a wonky tip
+                cc.quadraticCurveTo(x + w / 2 - 15, y - h / 2, x + w / 2 + (Math.random() * 6 - 3), y - h);
+                // Curve down to right base
+                cc.quadraticCurveTo(x + w / 2 + 15, y - h / 2, x + w + 8, y);
+                cc.lineTo(x - 8, y); // close base
+                cc.fill();
+
+                // Roof outline
+                cc.lineWidth = outlineWidth;
+                cc.strokeStyle = outlineColor;
+                cc.stroke();
+
+                // Roof tiles (horizontal curved lines)
+                cc.strokeStyle = outlineColor;
+                cc.lineWidth = 1;
+                cc.globalAlpha = 0.3;
+                let steps = 5;
+                for (let i = 1; i < steps; i++) {
+                    let ty = y - (h / steps) * i;
+                    let tw = w * (1 - i / steps);
+                    cc.beginPath();
+                    cc.moveTo(x + w / 2 - tw / 2, ty);
+                    cc.quadraticCurveTo(x + w / 2, ty + 5, x + w / 2 + tw / 2, ty);
+                    cc.stroke();
+                }
+                cc.globalAlpha = 1;
+
+                // Flag pole
+                let poleTipX = x + w / 2 + (Math.random() * 6 - 3);
+                cc.lineWidth = 2;
+                cc.strokeStyle = outlineColor;
+                cc.beginPath();
+                cc.moveTo(poleTipX, y - h);
+                cc.lineTo(poleTipX + 2, y - h - 25);
+                cc.stroke();
+
+                // Bright red flag
+                cc.fillStyle = '#ff4d4f';
+                cc.beginPath();
+                cc.moveTo(poleTipX + 2, y - h - 5);
+                cc.quadraticCurveTo(poleTipX + 10, y - h - 15, poleTipX + 22, y - h - 12);
+                cc.quadraticCurveTo(poleTipX + 10, y - h - 8, poleTipX + 2, y - h - 20);
+                cc.closePath();
+                cc.fill();
+                cc.stroke();
+            }
+
+            // Helper: Wonky Tower
+            function drawTower(x, w, topY, botY, roofH, cBody, cRoof) {
+                // Tower Body (slightly wider at bottom for cartoon look)
+                const botW = w + 10;
+                const offset = 5;
+                const pts = [
+                    { x: x, y: topY },
+                    { x: x + w, y: topY },
+                    { x: x + w + offset, y: botY },
+                    { x: x - offset, y: botY }
+                ];
+                drawPoly(pts, cBody, true);
+
+                // Battlements (corbels/teeth)
+                const teethCount = Math.max(3, Math.floor(w / 16));
+                const tW = w / teethCount;
+                for (let i = 0; i < teethCount; i++) {
+                    const tx = x - 2 + i * tW;
+                    drawPoly([
+                        { x: tx, y: topY + 4 },
+                        { x: tx + tW - 2, y: topY + 4 },
+                        { x: tx + tW - 2, y: topY - 12 },
+                        { x: tx, y: topY - 10 }
+                    ], cBody, true);
+                }
+
+                // Random stone bricks
+                cc.strokeStyle = outlineColor;
+                cc.lineWidth = 1.5;
+                cc.globalAlpha = 0.2;
+                for (let i = 0; i < 8; i++) {
+                    let sx = x + (Math.random() * (w - 20));
+                    let sy = topY + 20 + Math.random() * (botY - topY - 50);
+                    let bw = 12 + Math.random() * 10;
+                    let bh = 6 + Math.random() * 4;
+                    cc.beginPath();
+                    cc.rect(sx, sy, bw, bh);
+                    cc.stroke();
+                    // sometimes fill a brick with a slightly different color
+                    if (Math.random() > 0.5) {
+                        cc.fillStyle = '#1a0e2e';
+                        cc.globalAlpha = 0.1;
+                        cc.fill();
+                        cc.globalAlpha = 0.2;
+                    }
+                }
+                cc.globalAlpha = 1;
+
+                // Roof
+                drawRoof(x, topY - 10, w, roofH, cRoof);
+            }
+
+            // Helper: Cute glowing window
+            function drawWindow(cx, cy, w, h) {
+                // Window hole background
+                cc.fillStyle = '#2d1b4e';
+                cc.beginPath();
+                cc.moveTo(cx - w / 2, cy + h / 2);
+                cc.lineTo(cx - w / 2, cy - h / 4);
+                cc.arc(cx, cy - h / 4, w / 2, Math.PI, 0);
+                cc.lineTo(cx + w / 2, cy + h / 2);
+                cc.closePath();
+                cc.fill();
+
+                // Glow content
+                const wg = cc.createRadialGradient(cx, cy, 1, cx, cy, w);
+                wg.addColorStop(0, '#fffbe6'); wg.addColorStop(0.5, '#ffd666'); wg.addColorStop(1, '#ff9c6e');
+                cc.fillStyle = wg;
+                cc.fill();
+
+                // Outline
+                cc.lineWidth = outlineWidth;
+                cc.strokeStyle = outlineColor;
+                cc.stroke();
+
+                // Window bars (cross)
+                cc.lineWidth = 2;
+                cc.beginPath();
+                cc.moveTo(cx, cy - h / 2); cc.lineTo(cx, cy + h / 2);
+                cc.moveTo(cx - w / 2, cy + h / 4); cc.lineTo(cx + w / 2, cy + h / 4);
+                cc.stroke();
+
+                // Outer Glow effect around window (magic light)
+                const glow = cc.createRadialGradient(cx, cy, 2, cx, cy, w * 3);
+                glow.addColorStop(0, 'rgba(255,214,102,0.8)');
+                glow.addColorStop(1, 'rgba(255,214,102,0)');
+                cc.fillStyle = glow;
+                cc.beginPath();
+                cc.arc(cx, cy, w * 3.5, 0, Math.PI * 2);
+                cc.fill();
+            }
+
+            const baseY = CH - 35;
+            const cBody1 = '#9278bd'; // soft purple
+            const cBody2 = '#ada0d6'; // lighter purple
+            const cBody3 = '#7e64a8'; // darker purple for central wall
+            const cRoof1 = '#ff758f'; // pinkish red roof
+            const cRoof2 = '#ff8fa3';
+
+            // Far Left Outer Tower
+            drawTower(60, 50, 240, baseY, 90, cBody1, cRoof1);
+            drawWindow(85, 290, 16, 24);
+
+            // Far Right Outer Tower
+            drawTower(490, 50, 240, baseY, 90, cBody1, cRoof1);
+            drawWindow(515, 290, 16, 24);
+
+            // Main Wall (wonky rectangle)
+            const ptsWall = [
+                { x: 105, y: 270 }, { x: 495, y: 265 },
+                { x: 505, y: baseY }, { x: 95, y: baseY }
+            ];
+            drawPoly(ptsWall, cBody3, true);
+
+            // Wall Battlements
+            for (let bx = 110; bx < 480; bx += 40) {
+                drawPoly([
+                    { x: bx, y: 268 }, { x: bx + 22, y: 267 },
+                    { x: bx + 22, y: 250 }, { x: bx - 2, y: 252 }
+                ], cBody3, true);
+            }
+
+            // Inner Left Tower
+            drawTower(135, 65, 170, 290, 115, cBody2, cRoof2);
+            drawWindow(170, 230, 18, 28);
+
+            // Inner Right Tower
+            drawTower(400, 65, 170, 290, 115, cBody2, cRoof2);
+            drawWindow(435, 230, 18, 28);
+
+            // Center Tower (thick & tall)
+            drawTower(235, 130, 100, 290, 150, '#baabdf', '#ff5c77');
+            drawWindow(285, 150, 20, 32);
+            drawWindow(325, 210, 16, 26);
+            drawWindow(245, 210, 16, 26);
+
+            // Ground line
+            cc.lineWidth = outlineWidth + 1;
+            cc.strokeStyle = outlineColor;
+            cc.beginPath();
+            cc.moveTo(10, baseY);
+            cc.quadraticCurveTo(CW / 2, baseY + 10, CW - 10, baseY);
+            cc.stroke();
+
+            // Vines / Grass spreading from base
+            cc.strokeStyle = '#95de64'; // bright cute green
+            cc.lineCap = 'round';
+            for (let i = 0; i < 35; i++) {
+                cc.lineWidth = 2 + Math.random() * 2;
+                cc.beginPath();
+                let vx = 30 + Math.random() * 540;
+                let vy = baseY + 5;
+                cc.moveTo(vx, vy);
+                // curl up and sideways
+                cc.quadraticCurveTo(vx + (Math.random() * 20 - 10), vy - 10 - Math.random() * 20, vx + (Math.random() * 30 - 15), vy - 15 - Math.random() * 35);
+                cc.stroke();
+            }
+
+            // ===== CUTE DOUBLE DOOR GATE =====
+            const gateX = 240, gateW = 120, gateH = 135;
+            const gateTop = baseY - gateH;
+
+            // Gate arch backdrop (dark inner)
+            cc.fillStyle = '#1a0e2e';
+            cc.beginPath();
+            cc.moveTo(gateX, baseY);
+            cc.lineTo(gateX, gateTop + gateW / 2);
+            cc.arc(gateX + gateW / 2, gateTop + gateW / 2, gateW / 2, Math.PI, 0);
+            cc.lineTo(gateX + gateW, baseY);
+            cc.fill();
+
+            // Arch Stone border (wonky chunks)
+            cc.strokeStyle = outlineColor;
+            cc.lineWidth = outlineWidth;
+            const archThick = 18;
+            for (let a = 0; a <= 180; a += 30) {
+                let rad1 = a * Math.PI / 180;
+                let rad2 = (a + 30) * Math.PI / 180;
+                cc.fillStyle = '#ffd666'; // gold stones
+                cc.beginPath();
+                cc.arc(gateX + gateW / 2, gateTop + gateW / 2, gateW / 2, Math.PI + rad1, Math.PI + rad2);
+                cc.arc(gateX + gateW / 2, gateTop + gateW / 2, gateW / 2 + archThick, Math.PI + rad2, Math.PI + rad1, true);
+                cc.closePath();
+                cc.fill();
+                cc.stroke();
+            }
+            cc.fillStyle = '#ffd666';
+            cc.fillRect(gateX - archThick, gateTop + gateW / 2, archThick, gateH - gateW / 2);
+            cc.strokeRect(gateX - archThick, gateTop + gateW / 2, archThick, gateH - gateW / 2);
+            cc.fillRect(gateX + gateW, gateTop + gateW / 2, archThick, gateH - gateW / 2);
+            cc.strokeRect(gateX + gateW, gateTop + gateW / 2, archThick, gateH - gateW / 2);
+
+            // Door panels opening
+            const maxAngle = 80;
+            if (doorAngle < maxAngle) {
+                const rad = doorAngle * Math.PI / 180;
+                const perspectiveShrink = Math.cos(rad);
+                const doorW = (gateW / 2) * perspectiveShrink;
+                // Add vertical slanting for pseudo-3D
+                const yOffset = Math.sin(rad) * 15;
+
+                const doorGrad = cc.createLinearGradient(0, gateTop, 0, baseY);
+                doorGrad.addColorStop(0, '#d89614'); doorGrad.addColorStop(1, '#874d00'); // warm wood
+
+                // Left Door
+                cc.save();
+                cc.beginPath();
+                cc.moveTo(gateX, baseY);
+                cc.lineTo(gateX, gateTop + gateW / 2);
+                cc.arc(gateX + gateW / 2, gateTop + gateW / 2, gateW / 2, Math.PI, 1.5 * Math.PI);
+                cc.lineTo(gateX + gateW / 2, baseY);
+                cc.clip();
+
+                cc.fillStyle = doorGrad;
+                cc.beginPath();
+                cc.moveTo(gateX, gateTop);
+                cc.lineTo(gateX + doorW, gateTop + yOffset);
+                cc.lineTo(gateX + doorW, baseY - yOffset);
+                cc.lineTo(gateX, baseY);
+                cc.fill();
+
+                cc.lineWidth = outlineWidth; cc.strokeStyle = outlineColor;
+                cc.stroke();
+
+                // Planks
+                cc.beginPath(); cc.moveTo(gateX + doorW / 2, gateTop + yOffset / 2); cc.lineTo(gateX + doorW / 2, baseY - yOffset / 2); cc.stroke();
+
+                // Huge cute handle
+                cc.fillStyle = '#ffe58f';
+                cc.beginPath(); cc.arc(gateX + doorW - 8 * perspectiveShrink, gateTop + gateH / 2, 6 * perspectiveShrink, 0, Math.PI * 2); cc.fill(); cc.stroke();
+                cc.restore();
+
+                // Right Door
+                cc.save();
+                cc.beginPath();
+                cc.moveTo(gateX + gateW, baseY);
+                cc.lineTo(gateX + gateW, gateTop + gateW / 2);
+                cc.arc(gateX + gateW / 2, gateTop + gateW / 2, gateW / 2, 0, 1.5 * Math.PI, true);
+                cc.lineTo(gateX + gateW / 2, baseY);
+                cc.clip();
+
+                const rx = gateX + gateW - doorW;
+                cc.fillStyle = doorGrad;
+                cc.beginPath();
+                cc.moveTo(gateX + gateW, gateTop);
+                cc.lineTo(rx, gateTop + yOffset);
+                cc.lineTo(rx, baseY - yOffset);
+                cc.lineTo(gateX + gateW, baseY);
+                cc.fill();
+
+                cc.lineWidth = outlineWidth; cc.strokeStyle = outlineColor;
+                cc.stroke();
+
+                // Planks
+                cc.beginPath(); cc.moveTo(rx + doorW / 2, gateTop + yOffset / 2); cc.lineTo(rx + doorW / 2, baseY - yOffset / 2); cc.stroke();
+
+                // Huge cute handle
+                cc.fillStyle = '#ffe58f';
+                cc.beginPath(); cc.arc(rx + 8 * perspectiveShrink, gateTop + gateH / 2, 6 * perspectiveShrink, 0, Math.PI * 2); cc.fill(); cc.stroke();
+                cc.restore();
+            }
+
+            // Glow peeking through open doors
+            if (doorAngle > 0) {
+                const openRatio = doorAngle / maxAngle;
+                const innerGlow = cc.createRadialGradient(gateX + gateW / 2, baseY - 20, 10, gateX + gateW / 2, baseY - 20, gateW * 1.5);
+                innerGlow.addColorStop(0, `rgba(255,250,200,${openRatio * 0.9})`);
+                innerGlow.addColorStop(0.5, `rgba(255,214,102,${openRatio * 0.5})`);
+                innerGlow.addColorStop(1, 'rgba(255,250,200,0)');
+                cc.fillStyle = innerGlow;
+                cc.beginPath();
+                cc.arc(gateX + gateW / 2, baseY, gateW * 1.5, Math.PI, 0);
+                cc.fill();
+            }
+        }
+
+        drawCastle();
+
+        // ===== Gate Opening Animation =====
+        let gateOpened = false;
+
+        function openGate() {
+            if (gateOpened) return;
+            gateOpened = true;
+
+            document.getElementById('clickHint').classList.add('hide');
+
+            // Animate door opening on canvas
+            function animDoor() {
+                if (doorAngle < 85) {
+                    doorAngle += 2;
+                    drawCastle();
+                    requestAnimationFrame(animDoor);
+                }
+            }
+            doorOpening = true;
+            animDoor();
+
+            // Simultaneously zoom castle toward gate
+            setTimeout(() => {
+                castleCanvas.classList.add('zooming');
+            }, 400);
+
+            // Fade out landing
+            setTimeout(() => {
+                document.getElementById('landing').classList.add('hidden');
+            }, 1600);
+
+            // Show timeline
+            setTimeout(() => {
+                document.body.classList.add('timeline-active');
+                document.getElementById('main-content').classList.add('visible');
+                setTimeout(() => document.getElementById('scrollIndicator').classList.add('visible'), 500);
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 200) document.getElementById('scrollIndicator').classList.remove('visible');
+                });
+                initTimelineAnimations();
+                loadMemories();
+            }, 2400);
+
+            setTimeout(() => { document.getElementById('landing').style.display = 'none'; }, 3500);
+        }
+
+        // ===== Timeline Scroll Animations =====
+        function initTimelineAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => entry.target.classList.add('visible'), 150);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+            document.querySelectorAll('.timeline-item').forEach(item => observer.observe(item));
+        }
+
+        // ===== API-backed Memory Management =====
+        const uploader = document.getElementById('memoryUploader');
+        const container = document.getElementById('timeline-container');
+        let cardCount = 0;
+
+        function renderMemoryCard(memory, index) {
+            const alignment = index % 2 === 0 ? 'left' : 'right';
+            const images = memory.images || [];
+            let gridClass = 'single';
+            if (images.length === 2) gridClass = 'double';
+            else if (images.length >= 3) gridClass = 'triple';
+
+            const photosHtml = images.slice(0, 3).map(img =>
+                `<div class="photo-item" onclick="openLightbox('${img.url}')">
+                    <img src="${img.url}" alt="Memory" loading="lazy">
+                </div>`
+            ).join('');
+
+            const itemDiv = document.createElement('div');
+            itemDiv.className = `timeline-item ${alignment} visible`;
+            itemDiv.dataset.memoryId = memory.id;
+            itemDiv.innerHTML = `
+                <div class="timeline-card">
+                    <button class="delete-memory-btn" onclick="deleteMemory(${memory.id}, this)" title="删除">✕</button>
+                    <div class="timeline-date" contenteditable="true"
+                        onblur="saveField(${memory.id}, 'date', this.textContent)">${memory.date}</div>
+                    <div class="timeline-title" contenteditable="true"
+                        onblur="saveField(${memory.id}, 'title', this.textContent)">${memory.title}</div>
+                    <div class="timeline-desc" contenteditable="true"
+                        onblur="saveField(${memory.id}, 'description', this.textContent)">${memory.description || '点击编辑...'}</div>
+                    <div class="photo-grid ${gridClass}">
+                        ${photosHtml}
+                    </div>
+                </div>
+            `;
+            container.appendChild(itemDiv);
+        }
+
+        async function loadMemories() {
+            try {
+                const res = await fetch('/api/memories');
+                const memories = await res.json();
+                container.innerHTML = '';
+                memories.forEach((m, i) => renderMemoryCard(m, i));
+                cardCount = memories.length;
+            } catch (err) {
+                console.error('加载回忆失败:', err);
+            }
+        }
+
+        uploader.addEventListener('change', async function (e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+
+            const today = new Date();
+            const dateStr = `${today.getFullYear()} · ${String(today.getMonth() + 1).padStart(2, '0')} · ${String(today.getDate()).padStart(2, '0')}`;
+
+            const formData = new FormData();
+            formData.append('date', dateStr);
+            formData.append('title', '写下标题 📝');
+            formData.append('description', '');
+            files.slice(0, 9).forEach(f => formData.append('images', f));
+
+            try {
+                const res = await fetch('/api/memories', { method: 'POST', body: formData });
+                const memory = await res.json();
+                if (memory.error) throw new Error(memory.error);
+                renderMemoryCard(memory, cardCount);
+                cardCount++;
+                uploader.value = '';
+                setTimeout(() => {
+                    const last = container.lastElementChild;
+                    if (last) last.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 200);
+            } catch (err) {
+                console.error('上传失败:', err);
+                alert('上传失败: ' + err.message);
+            }
+        });
+
+        async function saveField(id, field, value) {
+            try {
+                await fetch(`/api/memories/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ [field]: value.trim() })
+                });
+            } catch (err) { console.error('保存失败:', err); }
+        }
+
+        async function deleteMemory(id, btn) {
+            if (!confirm('确定要删除这条回忆吗？')) return;
+            try {
+                await fetch(`/api/memories/${id}`, { method: 'DELETE' });
+                const card = btn.closest('.timeline-item');
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.8)';
+                setTimeout(() => card.remove(), 400);
+            } catch (err) { console.error('删除失败:', err); }
+        }
+
+        const style = document.createElement('style');
+        style.textContent = `
+            [contenteditable="true"]:hover {
+                background-color: rgba(212,160,167,0.1);
+                border-radius: 4px;
+                cursor: text;
+            }
+            [contenteditable="true"]:focus {
+                border-bottom: 1px dashed #d4a0a7;
+                outline: none;
+            }
+            .add-memory-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(212,160,167,0.6) !important;
+            }
+            .delete-memory-btn {
+                position: absolute; top: 8px; right: 8px;
+                background: rgba(255,77,79,0.15); border: none; color: #ff4d4f;
+                width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+                font-size: 14px; display: flex; align-items: center; justify-content: center;
+                opacity: 0; transition: opacity 0.2s, background 0.2s;
+            }
+            .timeline-card:hover .delete-memory-btn { opacity: 1; }
+            .delete-memory-btn:hover { background: rgba(255,77,79,0.3); }
+        `;
+        document.head.appendChild(style);
+
+        function openLightbox(src) {
+            document.getElementById('lightboxImg').src = src;
+            document.getElementById('lightbox').classList.add('active');
+        }
+        function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+    </script>
+</body>
+
+</html>
