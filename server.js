@@ -216,6 +216,39 @@ app.delete('/api/memories/:id', async (req, res) => {
     }
 });
 
+// ===== Message Board =====
+
+// GET all messages
+app.get('/api/messages', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('messages')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// POST new message
+app.post('/api/messages', async (req, res) => {
+    try {
+        const { author, content } = req.body;
+        if (!author || !content) return res.status(400).json({ error: '缺少必填字段' });
+        const { data, error } = await supabase
+            .from('messages')
+            .insert({ author, content })
+            .select()
+            .single();
+        if (error) throw error;
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Fallback: serve index.html for all non-API routes
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));

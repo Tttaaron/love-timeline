@@ -801,6 +801,134 @@
         body.perspective-boy .timeline::before {
             background: linear-gradient(to bottom, #5b8fa8, #7fb3c8, #5b8fa8);
         }
+
+        /* ===== Photo Grid 4-5 ===== */
+        .photo-grid.quad {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .photo-grid.quint {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .photo-grid.quint .photo-item:nth-child(4),
+        .photo-grid.quint .photo-item:nth-child(5) {
+            grid-column: span 1;
+        }
+
+        /* ===== Message Board ===== */
+        .message-board {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 30px 20px;
+        }
+
+        .mb-title {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            color: var(--rose-gold);
+            font-size: 24px;
+            margin-bottom: 24px;
+        }
+
+        .mb-input-area {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(212, 160, 167, 0.2);
+        }
+
+        .mb-input-area input,
+        .mb-input-area textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid rgba(212, 160, 167, 0.3);
+            border-radius: 10px;
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.8);
+            color: var(--text-dark);
+            outline: none;
+            transition: border-color 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .mb-input-area input:focus,
+        .mb-input-area textarea:focus {
+            border-color: var(--rose-gold);
+        }
+
+        .mb-input-area textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .mb-submit {
+            display: block;
+            margin: 0 auto;
+            padding: 10px 28px;
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(135deg, var(--rose-gold), var(--gold));
+            color: #fff;
+            font-size: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        .mb-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 160, 167, 0.4);
+        }
+
+        .mb-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mb-item {
+            background: rgba(255, 255, 255, 0.65);
+            border-radius: 12px;
+            padding: 16px;
+            border-left: 3px solid var(--rose-gold);
+            animation: fadeInUp 0.4s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .mb-item .mb-author {
+            font-weight: 600;
+            color: var(--rose-gold);
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .mb-item .mb-text {
+            color: var(--text-dark);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .mb-item .mb-time {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-top: 6px;
+        }
     </style>
 </head>
 
@@ -813,11 +941,11 @@
             <p class="subtitle">请输入你们的生日来开启故事</p>
             <div class="birthday-row">
                 <div class="birthday-field">
-                    <label>👦 他的生日</label>
+                    <label>♂ 男生生日</label>
                     <input type="text" id="boyBirthday" placeholder="月.日" maxlength="5">
                 </div>
                 <div class="birthday-field">
-                    <label>👧 她的生日</label>
+                    <label>♀ 女生生日</label>
                     <input type="text" id="girlBirthday" placeholder="月.日" maxlength="5">
                 </div>
             </div>
@@ -848,8 +976,8 @@
             <div class="counter-value" id="loveCounter">加载中...</div>
         </div>
         <div class="perspective-tabs">
-            <button class="perspective-tab active" onclick="switchPerspective('girl')" id="tabGirl">👧 她的视角</button>
-            <button class="perspective-tab" onclick="switchPerspective('boy')" id="tabBoy">👦 他的视角</button>
+            <button class="perspective-tab" onclick="switchPerspective('girl')" id="tabGirl">♀ 女生视角</button>
+            <button class="perspective-tab active" onclick="switchPerspective('boy')" id="tabBoy">♂ 男生视角</button>
         </div>
         <div class="toolbar">
             <button class="edit-toggle" id="editToggle" onclick="toggleEditMode()">✏️ 编辑模式</button>
@@ -859,6 +987,17 @@
         </div>
         <div class="timeline" id="timeline-container">
             <!-- Dynamic cards will be inserted here -->
+        </div>
+
+        <!-- Message Board -->
+        <div class="message-board">
+            <h2 class="mb-title">💌 留言板</h2>
+            <div class="mb-input-area">
+                <input type="text" id="mbAuthor" placeholder="你的昵称" maxlength="20">
+                <textarea id="mbContent" placeholder="写下想对ta说的话..." maxlength="500" rows="3"></textarea>
+                <button class="mb-submit" onclick="postMessage()">💕 留言</button>
+            </div>
+            <div id="mbList" class="mb-list"></div>
         </div>
         <div class="timeline-end">
             <div class="heart-big">💖</div>
@@ -1327,6 +1466,7 @@
                 });
                 initTimelineAnimations();
                 loadMemories();
+                loadMessages();
             }, 2400);
 
             setTimeout(() => { document.getElementById('landing').style.display = 'none'; }, 3500);
@@ -1405,7 +1545,8 @@
         updateLoveCounter();
 
         // ===== Perspective Switching =====
-        let currentPerspective = 'girl';
+        let currentPerspective = 'boy';
+        document.body.classList.add('perspective-boy');
         function switchPerspective(p) {
             currentPerspective = p;
             document.body.classList.remove('perspective-boy', 'perspective-girl');
@@ -1438,9 +1579,11 @@
             const images = memory.images || [];
             let gridClass = 'single';
             if (images.length === 2) gridClass = 'double';
-            else if (images.length >= 3) gridClass = 'triple';
+            else if (images.length === 3) gridClass = 'triple';
+            else if (images.length === 4) gridClass = 'quad';
+            else if (images.length >= 5) gridClass = 'quint';
 
-            const photosHtml = images.slice(0, 3).map(img =>
+            const photosHtml = images.slice(0, 5).map(img =>
                 `<div class="photo-item" onclick="openLightbox('${img.url}')">
                     <img src="${img.url}" alt="Memory" loading="lazy">
                 </div>`
@@ -1591,6 +1734,48 @@
         }
         function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
         document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+        // ===== Message Board =====
+        async function loadMessages() {
+            try {
+                const res = await fetch('/api/messages');
+                const msgs = await res.json();
+                const list = document.getElementById('mbList');
+                list.innerHTML = '';
+                msgs.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = 'mb-item';
+                    const time = new Date(m.created_at).toLocaleString('zh-CN', {
+                        month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                    });
+                    div.innerHTML = `
+                        <div class="mb-author">${m.author}</div>
+                        <div class="mb-text">${m.content}</div>
+                        <div class="mb-time">${time}</div>
+                    `;
+                    list.appendChild(div);
+                });
+            } catch (err) { console.error('加载留言失败:', err); }
+        }
+
+        async function postMessage() {
+            const author = document.getElementById('mbAuthor').value.trim();
+            const content = document.getElementById('mbContent').value.trim();
+            if (!author || !content) { alert('请填写昵称和留言内容'); return; }
+            try {
+                const res = await fetch('/api/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ author, content })
+                });
+                if (!res.ok) throw new Error('发送失败');
+                document.getElementById('mbAuthor').value = '';
+                document.getElementById('mbContent').value = '';
+                loadMessages();
+            } catch (err) {
+                alert('留言失败: ' + err.message);
+            }
+        }
     </script>
 </body>
 
