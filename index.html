@@ -533,12 +533,301 @@
                 font-size: 32px;
             }
         }
+
+        /* ===== Birthday Gate ===== */
+        #birthday-gate {
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a0e2e 0%, #2d1b4e 50%, #1a0e2e 100%);
+            transition: opacity 0.8s ease;
+        }
+
+        #birthday-gate.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .birthday-box {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            padding: 48px 40px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .birthday-box h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold-light);
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .birthday-box .subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        .birthday-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .birthday-field {
+            flex: 1;
+            text-align: left;
+        }
+
+        .birthday-field label {
+            display: block;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .birthday-field input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            font-size: 18px;
+            font-family: 'Noto Sans SC', sans-serif;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .birthday-field input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+        }
+
+        .birthday-field input::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .birthday-error {
+            color: #ff6b6b;
+            font-size: 13px;
+            min-height: 20px;
+            margin-bottom: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .birthday-error.show {
+            opacity: 1;
+        }
+
+        .birthday-submit {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--rose-gold), var(--gold));
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .birthday-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.4);
+        }
+
+        .birthday-heart {
+            font-size: 48px;
+            margin-bottom: 16px;
+            animation: heartPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+        }
+
+        /* ===== Love Counter ===== */
+        .love-counter {
+            text-align: center;
+            margin: -10px 0 20px;
+            padding: 20px;
+        }
+
+        .love-counter .counter-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .love-counter .counter-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            background: linear-gradient(135deg, var(--rose-gold), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .love-counter .counter-value span {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 14px;
+            -webkit-text-fill-color: var(--text-muted);
+            margin: 0 2px;
+        }
+
+        /* ===== Perspective Tabs ===== */
+        .perspective-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 24px;
+        }
+
+        .perspective-tab {
+            padding: 10px 28px;
+            border: 2px solid var(--rose-gold-light);
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        .perspective-tab:first-child {
+            border-radius: 20px 0 0 20px;
+        }
+
+        .perspective-tab:last-child {
+            border-radius: 0 20px 20px 0;
+        }
+
+        .perspective-tab.active {
+            background: linear-gradient(135deg, var(--rose-gold), var(--gold));
+            color: #fff;
+            border-color: var(--rose-gold);
+        }
+
+        /* ===== Edit Mode Toggle ===== */
+        .toolbar {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .edit-toggle {
+            padding: 8px 20px;
+            border: 2px solid var(--rose-gold-light);
+            border-radius: 20px;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        .edit-toggle.active {
+            background: linear-gradient(135deg, #ff6b6b, #ffa07a);
+            color: #fff;
+            border-color: #ff6b6b;
+        }
+
+        .add-memory-btn {
+            display: none;
+        }
+
+        body.edit-mode .add-memory-btn {
+            display: inline-block;
+        }
+
+        .delete-memory-btn {
+            display: none !important;
+        }
+
+        body.edit-mode .delete-memory-btn {
+            display: block !important;
+        }
+
+        body:not(.edit-mode) [contenteditable="true"] {
+            cursor: default;
+        }
+
+        /* ===== Boy Perspective Theme ===== */
+        body.perspective-boy {
+            --rose-gold: #5b8fa8;
+            --rose-gold-light: #7fb3c8;
+            --gold: #6e9dc4;
+            --gold-light: #9ec5e0;
+        }
+
+        body.perspective-boy .timeline-card {
+            border-radius: 8px;
+            border-color: #7fb3c8;
+        }
+
+        body.perspective-boy .timeline-card::before {
+            background: linear-gradient(135deg, #5b8fa8, #6e9dc4);
+        }
+
+        body.perspective-boy .timeline-item::before {
+            background: #5b8fa8;
+            box-shadow: 0 0 10px rgba(91, 143, 168, 0.5);
+        }
+
+        body.perspective-boy .timeline::before {
+            background: linear-gradient(to bottom, #5b8fa8, #7fb3c8, #5b8fa8);
+        }
     </style>
 </head>
 
 <body>
+    <!-- Birthday Gate -->
+    <div id="birthday-gate">
+        <div class="birthday-box">
+            <div class="birthday-heart">💕</div>
+            <h2>Our Love Story</h2>
+            <p class="subtitle">请输入你们的生日来开启故事</p>
+            <div class="birthday-row">
+                <div class="birthday-field">
+                    <label>👦 他的生日</label>
+                    <input type="text" id="boyBirthday" placeholder="月.日" maxlength="5">
+                </div>
+                <div class="birthday-field">
+                    <label>👧 她的生日</label>
+                    <input type="text" id="girlBirthday" placeholder="月.日" maxlength="5">
+                </div>
+            </div>
+            <div class="birthday-error" id="birthdayError">生日不正确，请重新输入</div>
+            <button class="birthday-submit" onclick="verifyBirthday()">💗 开启我们的故事</button>
+        </div>
+    </div>
+
     <!-- Landing Page -->
-    <div id="landing">
+    <div id="landing" style="display:none">
         <canvas id="bgCanvas"></canvas>
         <div class="castle-scene">
             <div class="title-text">Our Love Story</div>
@@ -554,19 +843,19 @@
             <p class="subtitle">每一个瞬间，都值得被铭记</p>
             <div class="heart-divider">💕</div>
         </div>
-        <div class="timeline-controls" style="text-align: center; margin-bottom: 30px;">
-            <input type="file" id="memoryUploader" accept="image/*" multiple style="display: none;">
-            <button class="add-memory-btn" onclick="document.getElementById('memoryUploader').click()" style="
-                background: linear-gradient(135deg, var(--rose-gold), var(--gold));
-                color: white;
-                border: none;
-                padding: 12px 24px;
-                border-radius: 25px;
-                font-size: 16px;
-                cursor: pointer;
-                box-shadow: 0 4px 15px rgba(212,160,167,0.4);
-                transition: transform 0.2s, box-shadow 0.2s;
-            ">✨ 添加新回忆 ✨</button>
+        <div class="love-counter">
+            <div class="counter-label">我们已经在一起</div>
+            <div class="counter-value" id="loveCounter">加载中...</div>
+        </div>
+        <div class="perspective-tabs">
+            <button class="perspective-tab active" onclick="switchPerspective('girl')" id="tabGirl">👧 她的视角</button>
+            <button class="perspective-tab" onclick="switchPerspective('boy')" id="tabBoy">👦 他的视角</button>
+        </div>
+        <div class="toolbar">
+            <button class="edit-toggle" id="editToggle" onclick="toggleEditMode()">✏️ 编辑模式</button>
+            <input type="file" id="memoryUploader" accept="image/*" multiple hidden>
+            <button class="add-memory-btn" onclick="document.getElementById('memoryUploader').click()">✨ 添加新回忆
+                ✨</button>
         </div>
         <div class="timeline" id="timeline-container">
             <!-- Dynamic cards will be inserted here -->
@@ -877,19 +1166,6 @@
             cc.quadraticCurveTo(CW / 2, baseY + 10, CW - 10, baseY);
             cc.stroke();
 
-            // Vines / Grass spreading from base
-            cc.strokeStyle = '#95de64'; // bright cute green
-            cc.lineCap = 'round';
-            for (let i = 0; i < 35; i++) {
-                cc.lineWidth = 2 + Math.random() * 2;
-                cc.beginPath();
-                let vx = 30 + Math.random() * 540;
-                let vy = baseY + 5;
-                cc.moveTo(vx, vy);
-                // curl up and sideways
-                cc.quadraticCurveTo(vx + (Math.random() * 20 - 10), vy - 10 - Math.random() * 20, vx + (Math.random() * 30 - 15), vy - 15 - Math.random() * 35);
-                cc.stroke();
-            }
 
             // ===== CUTE DOUBLE DOOR GATE =====
             const gateX = 240, gateW = 120, gateH = 135;
@@ -1069,6 +1345,89 @@
             document.querySelectorAll('.timeline-item').forEach(item => observer.observe(item));
         }
 
+        // ===== Birthday Verification =====
+        function verifyBirthday() {
+            const boy = document.getElementById('boyBirthday').value.trim();
+            const girl = document.getElementById('girlBirthday').value.trim();
+            const errEl = document.getElementById('birthdayError');
+            // Accept formats: 9.23 or 09.23 or 9-23 or 09-23
+            const normalize = s => s.replace('-', '.').replace(/^0/, '');
+            if (normalize(boy) === '9.23' && normalize(girl) === '1.27') {
+                document.getElementById('birthday-gate').classList.add('hidden');
+                setTimeout(() => {
+                    document.getElementById('birthday-gate').style.display = 'none';
+                    document.getElementById('landing').style.display = 'flex';
+                }, 800);
+            } else {
+                errEl.classList.add('show');
+                setTimeout(() => errEl.classList.remove('show'), 2000);
+            }
+        }
+        // Enter key support
+        document.querySelectorAll('#birthday-gate input').forEach(inp => {
+            inp.addEventListener('keydown', e => { if (e.key === 'Enter') verifyBirthday(); });
+        });
+
+        // ===== Love Counter =====
+        const LOVE_START = new Date('2026-02-10T00:00:00+08:00');
+        function updateLoveCounter() {
+            const now = new Date();
+            let diff = now - LOVE_START;
+            if (diff < 0) diff = 0;
+
+            const totalSeconds = Math.floor(diff / 1000);
+            const seconds = totalSeconds % 60;
+            const totalMinutes = Math.floor(totalSeconds / 60);
+            const minutes = totalMinutes % 60;
+            const totalHours = Math.floor(totalMinutes / 60);
+            const hours = totalHours % 24;
+            const totalDays = Math.floor(totalHours / 24);
+
+            // Calculate years, months, days
+            let y = now.getFullYear() - LOVE_START.getFullYear();
+            let m = now.getMonth() - LOVE_START.getMonth();
+            let d = now.getDate() - LOVE_START.getDate();
+            if (d < 0) { m--; const prev = new Date(now.getFullYear(), now.getMonth(), 0); d += prev.getDate(); }
+            if (m < 0) { y--; m += 12; }
+
+            const el = document.getElementById('loveCounter');
+            if (!el) return;
+            let parts = [];
+            if (y > 0) parts.push(`${y}<span>年</span>`);
+            if (m > 0 || y > 0) parts.push(`${m}<span>月</span>`);
+            parts.push(`${d}<span>天</span>`);
+            parts.push(`${String(hours).padStart(2, '0')}<span>时</span>`);
+            parts.push(`${String(minutes).padStart(2, '0')}<span>分</span>`);
+            parts.push(`${String(seconds).padStart(2, '0')}<span>秒</span>`);
+            el.innerHTML = parts.join('');
+        }
+        setInterval(updateLoveCounter, 1000);
+        updateLoveCounter();
+
+        // ===== Perspective Switching =====
+        let currentPerspective = 'girl';
+        function switchPerspective(p) {
+            currentPerspective = p;
+            document.body.classList.remove('perspective-boy', 'perspective-girl');
+            document.body.classList.add('perspective-' + p);
+            document.getElementById('tabGirl').classList.toggle('active', p === 'girl');
+            document.getElementById('tabBoy').classList.toggle('active', p === 'boy');
+            loadMemories();
+        }
+
+        // ===== Edit Mode =====
+        let editMode = false;
+        function toggleEditMode() {
+            editMode = !editMode;
+            document.body.classList.toggle('edit-mode', editMode);
+            document.getElementById('editToggle').classList.toggle('active', editMode);
+            document.getElementById('editToggle').textContent = editMode ? '🔒 退出编辑' : '✏️ 编辑模式';
+            // Toggle contenteditable
+            document.querySelectorAll('.timeline-card [contenteditable]').forEach(el => {
+                el.contentEditable = editMode ? 'true' : 'false';
+            });
+        }
+
         // ===== API-backed Memory Management =====
         const uploader = document.getElementById('memoryUploader');
         const container = document.getElementById('timeline-container');
@@ -1093,11 +1452,11 @@
             itemDiv.innerHTML = `
                 <div class="timeline-card">
                     <button class="delete-memory-btn" onclick="deleteMemory(${memory.id}, this)" title="删除">✕</button>
-                    <div class="timeline-date" contenteditable="true"
+                    <div class="timeline-date" contenteditable="false"
                         onblur="saveField(${memory.id}, 'date', this.textContent)">${memory.date}</div>
-                    <div class="timeline-title" contenteditable="true"
+                    <div class="timeline-title" contenteditable="false"
                         onblur="saveField(${memory.id}, 'title', this.textContent)">${memory.title}</div>
-                    <div class="timeline-desc" contenteditable="true"
+                    <div class="timeline-desc" contenteditable="false"
                         onblur="saveField(${memory.id}, 'description', this.textContent)">${memory.description || '点击编辑...'}</div>
                     <div class="photo-grid ${gridClass}">
                         ${photosHtml}
@@ -1105,11 +1464,15 @@
                 </div>
             `;
             container.appendChild(itemDiv);
+            // If edit mode is on, enable contenteditable
+            if (editMode) {
+                itemDiv.querySelectorAll('[contenteditable]').forEach(el => el.contentEditable = 'true');
+            }
         }
 
         async function loadMemories() {
             try {
-                const res = await fetch('/api/memories');
+                const res = await fetch(`/api/memories?perspective=${currentPerspective}`);
                 const memories = await res.json();
                 container.innerHTML = '';
                 memories.forEach((m, i) => renderMemoryCard(m, i));
@@ -1130,6 +1493,7 @@
             formData.append('date', dateStr);
             formData.append('title', '写下标题 📝');
             formData.append('description', '');
+            formData.append('perspective', currentPerspective);
             files.slice(0, 9).forEach(f => formData.append('images', f));
 
             try {
@@ -1150,6 +1514,7 @@
         });
 
         async function saveField(id, field, value) {
+            if (!editMode) return;
             try {
                 await fetch(`/api/memories/${id}`, {
                     method: 'PUT',
@@ -1183,14 +1548,26 @@
 
         const style = document.createElement('style');
         style.textContent = `
-            [contenteditable="true"]:hover {
+            body.edit-mode [contenteditable="true"]:hover {
                 background-color: rgba(212,160,167,0.1);
                 border-radius: 4px;
                 cursor: text;
             }
-            [contenteditable="true"]:focus {
+            body.edit-mode [contenteditable="true"]:focus {
                 border-bottom: 1px dashed #d4a0a7;
                 outline: none;
+            }
+            .add-memory-btn {
+                background: linear-gradient(135deg, var(--rose-gold), var(--gold));
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 25px;
+                font-size: 16px;
+                cursor: pointer;
+                box-shadow: 0 4px 15px rgba(212,160,167,0.4);
+                transition: transform 0.2s, box-shadow 0.2s;
+                font-family: 'Noto Sans SC', sans-serif;
             }
             .add-memory-btn:hover {
                 transform: translateY(-2px);

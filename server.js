@@ -45,10 +45,16 @@ const BUCKET = 'memory-images';
 // GET all memories with images
 app.get('/api/memories', async (req, res) => {
     try {
-        const { data: memories, error } = await supabase
+        let query = supabase
             .from('memories')
             .select('*')
             .order('date', { ascending: true });
+
+        if (req.query.perspective) {
+            query = query.eq('perspective', req.query.perspective);
+        }
+
+        const { data: memories, error } = await query;
 
         if (error) throw error;
 
@@ -88,7 +94,8 @@ app.post('/api/memories', upload.array('images', 9), async (req, res) => {
             .insert({
                 date: date || new Date().toISOString().slice(0, 10),
                 title: title || '写下标题 📝',
-                description: description || ''
+                description: description || '',
+                perspective: req.body.perspective || 'girl'
             })
             .select()
             .single();
